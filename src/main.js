@@ -12,22 +12,25 @@ export default async ({ req, res, log, error }) => {
   const MESSAGES = process.env.MESSAGES_COLLECTION_ID;
 
   try {
-    const body = typeof req.body === 'string' ? req.body : (req.payload || '{}');
-    const payload = JSON.parse(body || '{}');
+    const body = typeof req.body === 'string' && req.body ? req.body : (req.payload || '{}');
+    const data = JSON.parse(body || '{}');
 
-    const chatId = payload.chatId;
-    const content = (payload.content || '').toString().trim();
-    const senderId = req.variables?.APPWRITE_FUNCTION_USER_ID;
+    const chatId = data.chatId;
+    const content = (data.content || '').toString().trim();
+    // Nutzerkontext: primär aus Function-Variables, optional Fallback aus Payload
+    const senderId = req.variables?.APPWRITE_FUNCTION_USER_ID || data.senderId;
 
     if (!chatId || !content || !senderId) {
       return res.json({ error: 'chatId/content/senderId missing' }, 400);
     }
 
+    // Chat laden und Teilnehmer verifizieren
     const chat = await databases.getDocument(DB_ID, CHATS, chatId);
-    const participants = chat.participants || [];
+    const participants = chat?.participants || [];
     if (!participants.includes(senderId)) {
       return res.json({ error: 'not a participant' }, 403);
     }
+
     const otherId = participants.find((id) => id !== senderId) || senderId;
 
     const permissions = [
