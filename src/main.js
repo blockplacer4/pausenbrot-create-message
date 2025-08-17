@@ -21,7 +21,7 @@ export default async ({ req, res, log, error }) => {
     // Nutzerkontext: primär aus Function-Variables, optional Fallback aus Payload
     const senderId = req.variables?.APPWRITE_FUNCTION_USER_ID || data.senderId;
 
-    if (!chatId || !content || !senderId) {
+    if (!chatId || !content || !senderId || !uniqueDeviceID) {
       return res.json({ error: 'chatId/content/senderId missing' }, 400);
     }
 
