@@ -16,7 +16,7 @@ export default async ({ req, res, log, error }) => {
     const data = JSON.parse(body || '{}');
 
     const chatId = data.chatId;
-    const uniqueDeviceID = data.uniqueDeviceID;
+    const uniqueSenderID = data.uniqueDeviceID;
     const content = (data.content || '').toString().trim();
     // Nutzerkontext: primär aus Function-Variables, optional Fallback aus Payload
     const senderId = req.variables?.APPWRITE_FUNCTION_USER_ID || data.senderId;
@@ -49,7 +49,7 @@ export default async ({ req, res, log, error }) => {
       DB_ID,
       MESSAGES,
       ID.unique(),
-      { chatId, senderId, content, uniqueDeviceID },
+      { chatId, senderId, content, uniqueSenderID },
       permissions
     );
 
