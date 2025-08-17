@@ -16,6 +16,7 @@ export default async ({ req, res, log, error }) => {
     const data = JSON.parse(body || '{}');
 
     const chatId = data.chatId;
+    log("Getting Device ID");
     const uniqueSenderID = data.uniqueDeviceID;
     const content = (data.content || '').toString().trim();
     // Nutzerkontext: primär aus Function-Variables, optional Fallback aus Payload
@@ -44,7 +45,7 @@ export default async ({ req, res, log, error }) => {
       Permission.delete(Role.user(senderId)),
       Permission.delete(Role.user(otherId)),
     ];
-
+    log("Creating document");
     const msg = await databases.createDocument(
       DB_ID,
       MESSAGES,
